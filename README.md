@@ -31,6 +31,11 @@ node server.js
 ## Klient
 Napisany w pythonie
 
+### Dodanie klienta z poziomu serwera
+```bash
+./add_client.sh hostname ip
+```
+
 ### Adres IP
 192.168.122.111/24
 
@@ -40,7 +45,7 @@ sudo apt install python3-full python3-pip
 pip install schedule --break-system-packages
 ```
 
-### Uruchomienie
+### Uruchomienie ręczne
 ```bash
 python3 client.py
 ```
