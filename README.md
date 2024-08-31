@@ -32,6 +32,7 @@ node server.js
 Napisany w pythonie
 
 ### Dodanie klienta z poziomu serwera
+Trzeba pamiętać o dodaniu klucza ssh na klienta. 
 ```bash
 ./add_client.sh hostname ip
 ```

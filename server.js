@@ -17,6 +17,7 @@ const db = mysql.createConnection({
 // Nawiązanie połączenia z bazą danych
 db.connect((err) => {
     if (err) {
+        // Baza danych musi istnieć. Jeśli nie istnieje, program się wywali
         console.error('Error connecting to the database:', err);
         return;
     }
