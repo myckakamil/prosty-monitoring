@@ -21,10 +21,6 @@ db.connect((err) => {
         return;
     }
     console.log('Connected to MySQL database');
-    
-    db.query(`
-        CREATE DATABASE IF NOT EXISTS monitoring
-        `)
 
     // Tworzenie tabeli clients, jeśli nie istnieje
     db.query(`
@@ -77,16 +73,19 @@ app.use(bodyParser.json());
 // Endpoint do rejestracji nowego klienta
 app.post('/clients', (req, res) => {
     const { client_name, ip_address, mac_address, hostname } = req.body;
-    const selectQuery = `SELECT * FROM clients WHERE client_name = ?`;
-    const insertQuery = `INSERT INTO clients (client_name, ip_address, mac_address, hostname) VALUES (?, ?, ?, ?)`;
 
+    // Sprawdzenie, czy klient już istnieje
+    const selectQuery = `SELECT * FROM clients WHERE client_name = ?`;
     db.query(selectQuery, [client_name], (err, rows) => {
         if (err) {
             console.error('Error selecting client:', err);
             res.status(500).send("Error selecting client");
         } else if (rows.length > 0) {
-            res.status(409).send("Client already exists");
+            // Klient już istnieje, zwróć jego ID
+            res.status(200).send({ clientId: rows[0].id });
         } else {
+            // Dodaj nowego klienta
+            const insertQuery = `INSERT INTO clients (client_name, ip_address, mac_address, hostname) VALUES (?, ?, ?, ?)`;
             db.query(insertQuery, [client_name, ip_address, mac_address, hostname], (err, result) => {
                 if (err) {
                     console.error('Error inserting client:', err);

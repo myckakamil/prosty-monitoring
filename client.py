@@ -34,7 +34,7 @@ def register_client(client_name):
         'hostname': hostname
     }
     response = requests.post(f'{SERVER_URL}/clients', json=client_data)
-    if response.status_code == 201:
+    if response.status_code == 200 or response.status_code == 201:
         return response.json()['clientId']
     else:
         raise Exception('Failed to register client')
@@ -71,21 +71,20 @@ def send_metrics(client_id, prev_sent, prev_recv, interval):
             break
         else:
             print("Failed to send metrics. Retrying in 15 seconds...")
-
-    return network_sent, network_received
+            time.sleep(15)
 
 # Przykład użycia
 if __name__ == '__main__':
     client_name = 'Client 1'
+    prev_sent = prev_recv = 0
+    interval = 5
+
     client_id = register_client(client_name)
-    
-    # Inicjalizacja poprzednich wartości sieciowych
-    prev_sent, prev_recv = psutil.net_io_counters().bytes_sent, psutil.net_io_counters().bytes_recv
-    interval = 5  # Czas w sekundach między wysyłaniem danych
 
     while True:
         try:
-            prev_sent, prev_recv = send_metrics(client_id, prev_sent, prev_recv, interval)
+            send_metrics(client_id, prev_sent, prev_recv, interval)
+            prev_sent, prev_recv = psutil.net_io_counters().bytes_sent, psutil.net_io_counters().bytes_recv
             time.sleep(interval)
         except Exception as e:
             print(f"Failed to send metrics: {str(e)}. Retrying in 15 seconds...")
