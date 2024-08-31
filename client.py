@@ -54,11 +54,13 @@ def send_metrics(client_id):
         'mac_address': mac_address,
         'hostname': hostname
     }
-    response = requests.post(f'{SERVER_URL}/metrics', json=metrics_data)
-    if response.status_code == 200:
-        print("Metrics sent successfully")
-    else:
-        raise Exception('Failed to send metrics')
+    while True:
+        response = requests.post(f'{SERVER_URL}/metrics', json=metrics_data)
+        if response.status_code == 200:
+            print("Metrics sent successfully")
+            break
+        else:
+            print("Failed to send metrics. Retrying in 15 seconds...")
 
 # Przykład użycia
 if __name__ == '__main__':
@@ -66,6 +68,10 @@ if __name__ == '__main__':
     client_id = register_client(client_name)
 
     while True:
-        send_metrics(client_id)
-        time.sleep(5)
+        try:
+            send_metrics(client_id)
+            time.sleep(5)
+        except Exception as e:
+            print(f"Failed to send metrics: {str(e)}. Retrying in 15 seconds...")
+            time.sleep(15)
 

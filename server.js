@@ -69,6 +69,7 @@ db.connect((err) => {
 app.use(bodyParser.json());
 
 // Endpoint do rejestracji nowego klienta
+// Endpoint do rejestracji nowego klienta
 app.post('/clients', (req, res) => {
     const { client_name, ip_address, mac_address, hostname } = req.body;
     const selectQuery = `SELECT * FROM clients WHERE client_name = ?`;
@@ -101,7 +102,7 @@ app.post('/metrics', (req, res) => {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
-    db.query(insertQuery, [client_id, cpu_usage, memory_usage, disk_usage, network_sent, network_received, ip_address, mac_address, hostname], (err, result) => {
+    db.query(insertQuery, [client_id, cpu_usage, memory_usage, disk_usage, network_sent, network_received, network_delay, ip_address, mac_address, hostname], (err, result) => {
         if (err) {
             console.error('Error inserting metrics:', err);
             res.status(500).send("Error inserting metrics");
