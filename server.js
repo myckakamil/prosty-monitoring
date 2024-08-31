@@ -21,6 +21,10 @@ db.connect((err) => {
         return;
     }
     console.log('Connected to MySQL database');
+    
+    db.query(`
+        CREATE DATABASE IF NOT EXISTS monitoring
+        `)
 
     // Tworzenie tabeli clients, jeśli nie istnieje
     db.query(`
@@ -51,6 +55,8 @@ db.connect((err) => {
             disk_usage FLOAT,
             network_sent BIGINT,
             network_received BIGINT,
+            avg_sent_mbps FLOAT,
+            avg_recv_mbps FLOAT,
             ip_address VARCHAR(45),
             mac_address VARCHAR(17),
             hostname VARCHAR(255),
@@ -68,7 +74,6 @@ db.connect((err) => {
 // Ustawienie body-parser do przetwarzania JSON
 app.use(bodyParser.json());
 
-// Endpoint do rejestracji nowego klienta
 // Endpoint do rejestracji nowego klienta
 app.post('/clients', (req, res) => {
     const { client_name, ip_address, mac_address, hostname } = req.body;
@@ -96,13 +101,13 @@ app.post('/clients', (req, res) => {
 
 // Endpoint do odbierania metryk od klienta
 app.post('/metrics', (req, res) => {
-    const { client_id, cpu_usage, memory_usage, disk_usage, network_sent, network_received, ip_address, mac_address, hostname } = req.body;
+    const { client_id, cpu_usage, memory_usage, disk_usage, network_sent, network_received, avg_sent_mbps, avg_recv_mbps, ip_address, mac_address, hostname } = req.body;
     const insertQuery = `
-        INSERT INTO metrics (client_id, cpu_usage, memory_usage, disk_usage, network_sent, network_received, ip_address, mac_address, hostname)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO metrics (client_id, cpu_usage, memory_usage, disk_usage, network_sent, network_received, avg_sent_mbps, avg_recv_mbps, ip_address, mac_address, hostname)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
-    db.query(insertQuery, [client_id, cpu_usage, memory_usage, disk_usage, network_sent, network_received, network_delay, ip_address, mac_address, hostname], (err, result) => {
+    db.query(insertQuery, [client_id, cpu_usage, memory_usage, disk_usage, network_sent, network_received, avg_sent_mbps, avg_recv_mbps, ip_address, mac_address, hostname], (err, result) => {
         if (err) {
             console.error('Error inserting metrics:', err);
             res.status(500).send("Error inserting metrics");
