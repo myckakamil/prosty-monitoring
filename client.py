@@ -5,7 +5,8 @@ import uuid
 import psutil
 import time
 import subprocess
-import statistics  
+import statistics
+import threading
 
 # Adres URL serwera
 SERVER_URL = 'http://192.168.10.113:5000'
@@ -72,47 +73,52 @@ def register_client(client_name):
     else:
         raise Exception('Failed to register client')
 
-# Wysyłanie metryk na serwer
+# Wysyłanie metryk na serwer (uruchamiane w osobnym wątku)
 def send_metrics(client_id, prev_sent, prev_recv, interval):
-    cpu_usage, memory_usage, disk_usage, network_sent, network_received = get_metrics()
-    hostname, ip_address, mac_address = get_system_info()
-
-    # Obliczanie średniej przepustowości (Mbps)
-    sent_diff = network_sent - prev_sent
-    recv_diff = network_received - prev_recv
-    avg_sent_mbps = (sent_diff * 8) / (interval * 1024 * 1024)
-    avg_recv_mbps = (recv_diff * 8) / (interval * 1024 * 1024)
-    
-    # Obliczanie opóźnienia pingu do serwera
-    server_ip = get_server_ip(SERVER_URL)
-    server_ping_min, server_ping_max, server_ping_avg, server_ping_stddev = get_ping_statistics(server_ip)
-
-    metrics_data = {
-        'client_id': client_id,
-        'cpu_usage': cpu_usage,
-        'memory_usage': memory_usage,
-        'disk_usage': disk_usage,
-        'network_sent': network_sent,
-        'network_received': network_received,
-        'avg_sent_mbps': avg_sent_mbps,
-        'avg_recv_mbps': avg_recv_mbps,
-        'server_ping_min': server_ping_min,
-        'server_ping_max': server_ping_max,
-        'server_ping_avg': server_ping_avg,
-        'server_ping_stddev': server_ping_stddev,
-        'ip_address': ip_address,
-        'mac_address': mac_address,
-        'hostname': hostname
-    }
-
     while True:
-        response = requests.post(f'{SERVER_URL}/metrics', json=metrics_data)
-        if response.status_code == 200:
-            print("Metrics sent successfully")
-            break
-        else:
-            print("Failed to send metrics. Retrying in 15 seconds...")
-            time.sleep(15)
+        cpu_usage, memory_usage, disk_usage, network_sent, network_received = get_metrics()
+        hostname, ip_address, mac_address = get_system_info()
+
+        # Obliczanie średniej przepustowości (Mbps)
+        sent_diff = network_sent - prev_sent
+        recv_diff = network_received - prev_recv
+        avg_sent_mbps = (sent_diff * 8) / (interval * 1024 * 1024)
+        avg_recv_mbps = (recv_diff * 8) / (interval * 1024 * 1024)
+
+        # Obliczanie opóźnienia pingu do serwera
+        server_ip = get_server_ip(SERVER_URL)
+        server_ping_min, server_ping_max, server_ping_avg, server_ping_stddev = get_ping_statistics(server_ip)
+
+        metrics_data = {
+            'client_id': client_id,
+            'cpu_usage': cpu_usage,
+            'memory_usage': memory_usage,
+            'disk_usage': disk_usage,
+            'network_sent': network_sent,
+            'network_received': network_received,
+            'avg_sent_mbps': avg_sent_mbps,
+            'avg_recv_mbps': avg_recv_mbps,
+            'server_ping_min': server_ping_min,
+            'server_ping_max': server_ping_max,
+            'server_ping_avg': server_ping_avg,
+            'server_ping_stddev': server_ping_stddev,
+            'ip_address': ip_address,
+            'mac_address': mac_address,
+            'hostname': hostname
+        }
+
+        while True:
+            response = requests.post(f'{SERVER_URL}/metrics', json=metrics_data)
+            if response.status_code == 200:
+                print("Metrics sent successfully")
+                break
+            else:
+                print("Failed to send metrics. Retrying in 15 seconds...")
+                time.sleep(15)
+
+        # Aktualizacja wartości do obliczeń przy następnym iteracji
+        prev_sent, prev_recv = network_sent, network_received
+        time.sleep(interval)
 
 # Przykład użycia
 if __name__ == '__main__':
@@ -122,11 +128,15 @@ if __name__ == '__main__':
 
     client_id = register_client(client_name)
 
+    # Tworzenie wątku dla wysyłania metryk
+    metrics_thread = threading.Thread(target=send_metrics, args=(client_id, prev_sent, prev_recv, interval))
+    metrics_thread.start()
+
+    # Główna pętla aplikacji
     while True:
         try:
-            send_metrics(client_id, prev_sent, prev_recv, interval)
-            prev_sent, prev_recv = psutil.net_io_counters().bytes_sent, psutil.net_io_counters().bytes_recv
-            time.sleep(interval)
-        except Exception as e:
-            print(f"Failed to send metrics: {str(e)}. Retrying in 15 seconds...")
-            time.sleep(15)
+            # Można dodać tutaj inne zadania, które powinny być wykonywane w głównym wątku
+            time.sleep(1)
+        except KeyboardInterrupt:
+            print("Stopping the application...")
+            break
