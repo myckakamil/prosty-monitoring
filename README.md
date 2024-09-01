@@ -7,9 +7,6 @@ Celem programu jest utworzenie prostego systemu monitorowania systemów, napisan
 ## Serwer
 Napisany w nodejs
 
-### Adres IP
-192.168.122.100/24
-
 ### Zależności
 ```bash
 sudo apt-get update
@@ -38,9 +35,6 @@ Trzeba pamiętać o dodaniu klucza ssh na klienta.
 ```bash
 ./add_client.sh hostname ip
 ```
-
-### Adres IP
-192.168.122.111/24
 
 ### Zależności
 ```bash
