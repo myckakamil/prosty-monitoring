@@ -54,6 +54,10 @@ db.connect((err) => {
             network_received BIGINT,
             avg_sent_mbps FLOAT,
             avg_recv_mbps FLOAT,
+            server_ping_min FLOAT,
+            server_ping_max FLOAT,
+            server_ping_avg FLOAT,
+            server_ping_stddev FLOAT,
             ip_address VARCHAR(45),
             mac_address VARCHAR(17),
             hostname VARCHAR(255),
@@ -101,13 +105,29 @@ app.post('/clients', (req, res) => {
 
 // Endpoint do odbierania metryk od klienta
 app.post('/metrics', (req, res) => {
-    const { client_id, cpu_usage, memory_usage, disk_usage, network_sent, network_received, avg_sent_mbps, avg_recv_mbps, ip_address, mac_address, hostname } = req.body;
+    const {
+        client_id, cpu_usage, memory_usage, disk_usage,
+        network_sent, network_received, avg_sent_mbps, avg_recv_mbps,
+        server_ping_min, server_ping_max, server_ping_avg, server_ping_stddev,
+        ip_address, mac_address, hostname
+    } = req.body;
+
     const insertQuery = `
-        INSERT INTO metrics (client_id, cpu_usage, memory_usage, disk_usage, network_sent, network_received, avg_sent_mbps, avg_recv_mbps, ip_address, mac_address, hostname)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-    
-    db.query(insertQuery, [client_id, cpu_usage, memory_usage, disk_usage, network_sent, network_received, avg_sent_mbps, avg_recv_mbps, ip_address, mac_address, hostname], (err, result) => {
+        INSERT INTO metrics (
+            client_id, cpu_usage, memory_usage, disk_usage, network_sent, network_received,
+            avg_sent_mbps, avg_recv_mbps,
+            server_ping_min, server_ping_max, server_ping_avg, server_ping_stddev,
+            ip_address, mac_address, hostname
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
+
+    db.query(insertQuery, [
+        client_id, cpu_usage, memory_usage, disk_usage, network_sent, network_received,
+        avg_sent_mbps, avg_recv_mbps,
+        server_ping_min, server_ping_max, server_ping_avg, server_ping_stddev,
+        ip_address, mac_address, hostname
+    ], (err, result) => {
         if (err) {
             console.error('Error inserting metrics:', err);
             res.status(500).send("Error inserting metrics");

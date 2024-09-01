@@ -15,7 +15,7 @@ fi
 # Parametry połączenia SSH
 REMOTE_USER=$1  # Nazwa użytkownika na zdalnym serwerze
 REMOTE_HOST=$2  # Adres IP lub domena zdalnego serwera
-REMOTE_DIR="/home/$REMOTE_USER/client_monitor"  # Ścieżka na zdalnym serwerze, gdzie skrypt będzie przechowywany
+REMOTE_DIR="/home/$REMOTE_USER"  # Ścieżka na zdalnym serwerze, gdzie skrypt będzie przechowywany
 CLIENT_SCRIPT="client.py"  # Nazwa skryptu klienta
 
 # Ścieżka do lokalnego pliku klienta

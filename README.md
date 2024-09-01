@@ -10,9 +10,9 @@ Napisany w nodejs
 
 ### Zależności
 ```bash
-sudo apt install nodejs npm apache2 mariadb-server
+sudo apt-get update
+sudo apt-get install nodejs npm apache2 mariadb-server
 npm install express mysql2 body-parser
-
 ```
 ### Baza danych
 
@@ -42,7 +42,8 @@ Trzeba pamiętać o dodaniu klucza ssh na klienta.
 
 ### Zależności
 ```bash
-sudo apt install python3-full python3-pip
+sudo apt-get update
+sudo apt-get install python3-full python3-pip
 pip install schedule --break-system-packages
 ```
 
