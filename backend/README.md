@@ -11,7 +11,7 @@ Napisany w nodejs
 ### Zależności
 ```bash
 sudo apt-get update
-sudo apt-get install nodejs npm apache2 mariadb-server
+sudo apt-get install nodejs npm apache2 mariadb-server php php-mysqli libapache2-mod-php
 npm install express mysql2 body-parser
 ```
 ### Baza danych
