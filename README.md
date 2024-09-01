@@ -51,3 +51,9 @@ pip install schedule --break-system-packages
 ```bash
 python3 client.py
 ```
+
+# Do poprawy:
+- skrypt instalacyjny
+- css strony internetowej
+- wyczyszczenie kodu
+- napisanie deamonów
