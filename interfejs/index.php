@@ -138,8 +138,8 @@ if ($selected_client_id > 0) {
             const cpuUsage = metrics.map(metric => metric.cpu_usage);
             const memoryUsage = metrics.map(metric => metric.memory_usage);
             const diskUsage = metrics.map(metric => metric.disk_usage);
-            const networkSent = metrics.map(metric => metric.network_sent);
-            const networkReceived = metrics.map(metric => metric.network_received);
+            const networkSent = metrics.map(metric => metric.avg_sent_mbps);
+            const networkReceived = metrics.map(metric => metric.avg_recv_mbps);
 
             const ctxCpu = document.getElementById('cpuUsageChart').getContext('2d');
             const ctxMemory = document.getElementById('memoryUsageChart').getContext('2d');
