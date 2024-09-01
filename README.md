@@ -2,7 +2,7 @@
 
 Celem programu jest utworzenie prostego systemu monitorowania systemów, napisany w co najmniej dwóch językach. 
 
-[Demo](https://pow.mycka.net/)
+[Demo](https://pos.mycka.net/)
 
 ## Serwer
 Napisany w nodejs
