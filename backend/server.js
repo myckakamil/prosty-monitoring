@@ -25,11 +25,12 @@ if (cluster.isMaster) {
 } else {
     // Wątki (workery) - obsługują zapytania HTTP
     const app = express();
+    const server_host = '127.0.0.1';
     const port = 5000;
 
     // Konfiguracja połączenia z bazą danych MySQL
     const db = mysql.createConnection({
-        host: '127.0.0.1', // IPv4
+        host: server_host, // IPv4
         user: 'monitoring_user',
         password: 'password',
         database: 'monitoring'
@@ -161,7 +162,7 @@ if (cluster.isMaster) {
     app.get('/metrics/:clientId', (req, res) => {
         const clientId = req.params.clientId;
         const selectQuery = `SELECT * FROM metrics WHERE client_id = ? ORDER BY timestamp DESC LIMIT 10`;
-        
+
         db.query(selectQuery, [clientId], (err, rows) => {
             if (err) {
                 console.error('Error retrieving metrics:', err);
@@ -176,6 +177,6 @@ if (cluster.isMaster) {
     app.use(express.static(path.join(__dirname, 'public')));
 
     app.listen(port, () => {
-        console.log(`Worker ${process.pid} started, server running on http://localhost:${port}`);
+        console.log(`Worker ${process.pid} started, server running on http://${server_host}:${port}`);
     });
 }

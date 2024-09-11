@@ -7,7 +7,7 @@ if [ $# -ne 2 ]; then
 fi
 
 # Sprawdzenie, czy istnieje klucz dla tego serwera
-if [ ! -f ~/.ssh/id_rsa.pub ]; then
+if [ ! -f ~/.ssh/id_ed25519.pub ]; then
     echo "Klucz publiczny nie istnieje. Proszę wygenerować klucz SSH."
     exit 1
 fi
@@ -17,6 +17,7 @@ REMOTE_USER=$1  # Nazwa użytkownika na zdalnym serwerze
 REMOTE_HOST=$2  # Adres IP lub domena zdalnego serwera
 REMOTE_DIR="/home/$REMOTE_USER"  # Ścieżka na zdalnym serwerze, gdzie skrypt będzie przechowywany
 CLIENT_SCRIPT="client.py"  # Nazwa skryptu klienta
+echo "'$REMOTE_DIR'"
 
 # Ścieżka do lokalnego pliku klienta
 LOCAL_CLIENT_SCRIPT_PATH="./client.py"

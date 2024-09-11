@@ -7,9 +7,14 @@ import time
 import subprocess
 import statistics
 import threading
+import sys
+
+if len(sys.argv) < 2:
+  print("Host as first argument")
+  sys.exit(1)
 
 # Adres URL serwera
-SERVER_URL = 'http://192.168.10.113:5000'
+SERVER_URL = f'http://{sys.argv[1]}:{sys.argv[2] if len(sys.argv) > 2 else 5000}'
 
 # Wyciąganie IP serwera z URL
 def get_server_ip(url):
