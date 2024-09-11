@@ -50,7 +50,8 @@ if ($selected_client_id > 0) {
             text-align: left;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #ff0000;
+            /*background-color: #f2f2f2;*/
         }
         canvas {
             width: 100%;
